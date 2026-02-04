@@ -1,0 +1,25 @@
+﻿@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container">
+    <h2>Login</h2>
+    <form method="post" asp-action="Index">
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <input type="email" id="Email" name="Email" class="form-control" placeholder="Enter your email" required />
+        </div>
+        <div class="form-group">
+            <label for="Password">Password</label>
+            <input type="password" id="Password" name="Password" class="form-control" placeholder="Enter your password" required />
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+    </form>
+    <div>
+        <p>Don't have an account? <a href="/Home/Register">Register here</a></p>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+﻿@model QuestionnaireViewModel
+
+@{
+    ViewData["Title"] = "Assessment Form";
+}
+
+<div class="container">
+    <h2>Assessment Form</h2>
+    <form method="post" asp-action="SaveAnswers">
+        @foreach (var question in Model.Questions)
+        {
+            <div class="card mb-3">
+                <div class="card-header">@question.QuestionText</div>
+                <div class="card-body">
+                    <input type="radio" name="question_@question.Id" value="Option1"> Option 1
+                    <input type="radio" name="question_@question.Id" value="Option2"> Option 2
+                </div>
+            </div>
+        }
+        <button type="submit" class="btn btn-primary">Save Progress</button>
+    </form>
+</div>

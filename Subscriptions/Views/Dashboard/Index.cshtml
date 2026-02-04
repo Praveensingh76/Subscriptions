@@ -1,0 +1,42 @@
+﻿@model UserDashboardViewModel
+
+@{
+    ViewData["Title"] = "User Dashboard";
+}
+
+<div class="container">
+    <h2>Dashboard</h2>
+
+    <!-- Subscription Info -->
+    <div class="card">
+        <div class="card-header">Subscription</div>
+        <div class="card-body">
+            <p>Plan Type: @Model.Subscription.PlanType</p>
+           @*  <p>Status: @Model.Subscription.Status</p> *@
+            <p>Start Date: @Model.Subscription.StartDate.ToString("MMM dd, yyyy")</p>
+            <p>End Date: @Model.Subscription.EndDate.ToString("MMM dd, yyyy")</p>
+            @if (Model.Subscription.IsActive)
+            {
+                <a href="/Subscription/Manage" class="btn btn-primary">Manage Subscription</a>
+            }
+            else
+            {
+                <p>Your subscription has expired. Please renew.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Progress Info -->
+    <div class="card mt-4">
+        <div class="card-header">Questionnaire Progress</div>
+        <div class="card-body">
+            <p>Questions Completed: @Model.CompletedQuestionsCount / @Model.TotalQuestionsCount</p>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: @Model.ProgressPercentage%" aria-valuenow="@Model.ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
+                    @Model.ProgressPercentage%
+                </div>
+            </div>
+            <a href="/Assessment/Index" class="btn btn-success mt-3">Continue Questionnaire</a>
+        </div>
+    </div>
+</div>

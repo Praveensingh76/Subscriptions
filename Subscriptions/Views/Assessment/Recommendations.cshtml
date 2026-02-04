@@ -1,0 +1,18 @@
+﻿@model RecommendationsViewModel
+
+@{
+    ViewData["Title"] = "Recommendations";
+}
+
+<div class="container">
+    <h2>Guidance & Recommendations</h2>
+
+    @if (!string.IsNullOrEmpty(Model.Recommendations))
+    {
+        <p>@Model.Recommendations</p>
+    }
+    else
+    {
+        <p>You need to complete the questionnaire to receive recommendations.</p>
+    }
+</div>

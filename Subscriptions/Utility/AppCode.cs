@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Subscriptions
+namespace Subscriptions.Utility
 {
     public class AppCode
     {

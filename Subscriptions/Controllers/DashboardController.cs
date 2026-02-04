@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Subscriptions.Interface;
 using Subscriptions.Models;
+using Subscriptions.Utility;
 
 namespace Subscriptions.Controllers
 {
+    [RoleAuthorizationFilter]
     public class DashboardController : Controller
     {
         private readonly IRepository _repository;
@@ -14,7 +16,8 @@ namespace Subscriptions.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var userId = 1; // Replace this with actual logged-in user's ID.
+            var userIdEncrypted = HttpContext.Session.GetString("Id");
+            var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
             var subscription = await _repository.CheckSubscriptionAsync(userId);
             var responses = await _repository.GetUserResponsesAsync(userId);
 

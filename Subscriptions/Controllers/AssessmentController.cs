@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Subscriptions.Interface;
 using Subscriptions.Models;
+using Subscriptions.Utility;
 
 namespace Subscriptions.Controllers
 {
+    [RoleAuthorizationFilter]
     public class AssessmentController : Controller
     {
         private readonly IRepository _repository;
@@ -30,12 +32,15 @@ namespace Subscriptions.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userIdEncrypted = HttpContext.Session.GetString("Id");
+                var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
                 // Assuming the responses are from the form as `model.Answers`
                 foreach (var question in model.Questions)
                 {
                     var response = new UserResponse
                     {
-                        UserId = 1, // Replace with actual user ID
+
+                        UserId = userId,
                         QuestionId = question.Id,
                         Response = "Sample answer" // Replace with the actual response from the form
                     };
@@ -51,7 +56,8 @@ namespace Subscriptions.Controllers
 
         public async Task<IActionResult> Recommendations()
         {
-            var userId = 1; // Replace with actual user ID
+            var userIdEncrypted = HttpContext.Session.GetString("Id");
+            var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
             var guidance = await _repository.GetGuidanceRecommendationsAsync(userId);
 
             var model = new RecommendationsViewModel

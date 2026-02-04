@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Subscriptions.Interface;
 using Subscriptions.Models;
+using Subscriptions.Utility;
 
 namespace Subscriptions.Controllers
 {
+    [RoleAuthorizationFilter]
     public class SubscriptionController : Controller
     {
         private readonly IRepository _repository;
@@ -14,7 +16,8 @@ namespace Subscriptions.Controllers
         }
         public async Task<IActionResult> Manage()
         {
-            var userId = 1; // Replace with actual logged-in user's ID.
+            var userIdEncrypted = HttpContext.Session.GetString("Id");
+            var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
             var subscription = await _repository.CheckSubscriptionAsync(userId);
 
             if (subscription == null)
@@ -35,7 +38,8 @@ namespace Subscriptions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RenewSubscription(string planType)
         {
-            var userId = 1;
+            var userIdEncrypted = HttpContext.Session.GetString("Id");
+            var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
             var subscription = new Subscription
             {
                 UserId = userId,
@@ -53,7 +57,8 @@ namespace Subscriptions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelSubscription()
         {
-            var userId = 1; // Replace with actual logged-in user's ID.
+            var userIdEncrypted = HttpContext.Session.GetString("Id");
+            var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
             var subscription = await _repository.CheckSubscriptionAsync(userId);
 
             if (subscription != null)

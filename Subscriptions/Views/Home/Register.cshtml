@@ -1,27 +1,225 @@
-﻿@{
+﻿@model RegisterViewModel
+
+@{
     ViewData["Title"] = "Register";
 }
 
-<div class="container">
-    <h2>Register</h2>
-    <form method="post" asp-action="Register">
-        <div class="form-group">
-            <label for="Username">Username</label>
-            <input type="text" id="Username" name="Username" class="form-control" placeholder="Enter your username" required />
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h3 class="my-0">
+                        <i class="fas fa-user-plus me-2"></i>Create Your Account
+                    </h3>
+                    <p class="mb-0 mt-2 small opacity-75">Join our community today</p>
+                </div>
+
+                <div class="card-body p-5">
+                    <form method="post" asp-action="Register" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger"></div>
+
+                        <div class="row">
+                            <!-- Username Field -->
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Username" class="form-control" placeholder="john_doe"
+                                           required autofocus />
+                                    <label asp-for="Username" class="form-label">
+                                        <i class="fas fa-user me-1"></i>Username
+                                    </label>
+                                    <span asp-validation-for="Username" class="text-danger small"></span>
+                                    <div class="form-text">Choose a unique username (4-20 characters)</div>
+                                </div>
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Email" class="form-control" placeholder="name@example.com"
+                                           required type="email" />
+                                    <label asp-for="Email" class="form-label">
+                                        <i class="fas fa-envelope me-1"></i>Email Address
+                                    </label>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <div class="form-floating position-relative">
+                                <input asp-for="Password" class="form-control" placeholder="Password"
+                                       required id="passwordField" />
+                                <label asp-for="Password" class="form-label">
+                                    <i class="fas fa-lock me-1"></i>Password
+                                </label>
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3"
+                                        id="togglePassword" style="z-index: 5;">
+                                    <i class="fas fa-eye" id="toggleIcon"></i>
+                                </button>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Password must be at least 8 characters with uppercase, lowercase, and numbers
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="mb-4">
+                            <div class="form-floating position-relative">
+                                <input class="form-control" placeholder="Confirm Password"
+                                       required id="confirmPasswordField" />
+                                <label class="form-label">
+                                    <i class="fas fa-lock me-1"></i>Confirm Password
+                                </label>
+                                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3"
+                                        id="toggleConfirmPassword" style="z-index: 5;">
+                                    <i class="fas fa-eye" id="toggleConfirmIcon"></i>
+                                </button>
+
+                            </div>
+                        </div>
+
+                        <!-- Optional: First Name & Last Name (if in model) -->
+                        <!-- Terms & Conditions -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" required />
+                            <label class="form-check-label">
+                                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+                            </label>
+
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+
+                        <hr class="my-4" />
+
+
+
+                        <!-- Login Link -->
+                        <div class="text-center">
+                            <p class="mb-2">Already have an account?</p>
+                            <a asp-controller="Home" asp-action="Index"
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In Here
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>Your information is protected with 256-bit SSL encryption
+                    </small>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="Email">Email</label>
-            <input type="email" id="Email" name="Email" class="form-control" placeholder="Enter your email" required />
-        </div>
-        <div class="form-group">
-            <label for="Password">Password</label>
-            <input type="password" id="Password" name="PasswordHash" class="form-control" placeholder="Enter your password" required />
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Register</button>
-        </div>
-    </form>
-    <div>
-        <p>Already have an account? <a href="/Home/Index">Login here</a></p>
     </div>
 </div>
+
+<!-- Terms & Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="termsModalLabel">
+                    <i class="fas fa-file-contract me-2"></i>Terms and Conditions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Account Terms</h6>
+                <p>By creating an account, you agree to:</p>
+                <ul>
+                    <li>Provide accurate and complete information</li>
+                    <li>Keep your login credentials secure</li>
+                    <li>Accept responsibility for all activities under your account</li>
+                    <li>Not use the service for illegal purposes</li>
+                    <li>Not violate any laws in your jurisdiction</li>
+                </ul>
+
+                <h6>Privacy Policy</h6>
+                <p>We respect your privacy and are committed to protecting your personal data.</p>
+
+                <h6>User Conduct</h6>
+                <p>Users must not engage in abusive behavior, spamming, or any activity that disrupts the service.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        onclick="document.getElementById('AgreeToTerms').checked = true;">
+                    I Accept
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Password visibility toggle
+        function setupPasswordToggle(passwordFieldId, toggleButtonId, toggleIconId) {
+            const toggleBtn = document.getElementById(toggleButtonId);
+            if (!toggleBtn) return;
+
+            toggleBtn.addEventListener('click', function() {
+                const passwordField = document.getElementById(passwordFieldId);
+                const toggleIcon = document.getElementById(toggleIconId);
+
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordField.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            });
+        }
+
+        // Setup both password toggles
+        setupPasswordToggle('passwordField', 'togglePassword', 'toggleIcon');
+        setupPasswordToggle('confirmPasswordField', 'toggleConfirmPassword', 'toggleConfirmIcon');
+
+        // Password match validation
+        const passwordField = document.getElementById('passwordField');
+        const confirmPasswordField = document.getElementById('confirmPasswordField');
+
+        function validatePasswordMatch() {
+            if (passwordField.value !== confirmPasswordField.value) {
+                confirmPasswordField.setCustomValidity('Passwords do not match');
+            } else {
+                confirmPasswordField.setCustomValidity('');
+            }
+        }
+
+        if (passwordField && confirmPasswordField) {
+            passwordField.addEventListener('input', validatePasswordMatch);
+            confirmPasswordField.addEventListener('input', validatePasswordMatch);
+        }
+
+        // Bootstrap validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+}

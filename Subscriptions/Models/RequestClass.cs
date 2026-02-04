@@ -33,5 +33,11 @@
         public string Recommendations { get; set; }
     }
 
+    public class SubscriptionManagementViewModel
+    {
+        public Subscription Subscription { get; set; }
+        public IEnumerable<string> AvailablePlans { get; set; }
+    }
+
 
 }

@@ -31,7 +31,21 @@ namespace Subscriptions.Repo
                     user.SubscriptionStatus,
                     QueryType = "Register"
                 };
-                return await connection.ExecuteAsync("sp_User", parameters, commandType: CommandType.StoredProcedure);
+                var userId = await connection.ExecuteScalarAsync<int>("sp_User", parameters, commandType: CommandType.StoredProcedure);
+
+                var subscriptionParameters = new
+                {
+                    UserId = userId,
+                    PlanType = "1 Month",
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddMonths(1),
+                    QueryType = "Create"
+                };
+
+                // Insert the subscription for the user
+                await connection.ExecuteAsync("sp_Subscription", subscriptionParameters, commandType: CommandType.StoredProcedure);
+
+                return userId;
             }
         }
 

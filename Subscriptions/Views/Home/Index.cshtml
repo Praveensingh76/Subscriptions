@@ -4,22 +4,113 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="container">
-    <h2>Login</h2>
-    <form method="post" asp-action="Index">
-        <div class="form-group">
-            <label for="Email">Email</label>
-            <input type="email" id="Email" name="Email" class="form-control" placeholder="Enter your email" required />
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="my-0">
+                        <i class="fas fa-sign-in-alt me-2"></i>@ViewData["Title"]
+                    </h3>
+                </div>
+
+                <div class="card-body p-5">
+                    <form method="post" asp-action="Index" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com"
+                                   required autofocus />
+                            <label asp-for="Email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Email Address
+                            </label>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3 position-relative">
+                            <input asp-for="Password" class="form-control" placeholder="Password"
+                                   required id="passwordField" />
+                            <label asp-for="Password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Password
+                            </label>
+                            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3"
+                                    id="togglePassword" style="z-index: 5;">
+                                <i class="fas fa-eye" id="toggleIcon"></i>
+                            </button>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        @*  <div class="form-check mb-3">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label">
+                                Remember me
+                            </label>
+                        </div> *@
+
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                        </div>
+
+                        @*  <div class="text-center mb-3">
+                            <a asp-controller="Home" asp-action="ForgotPassword" class="text-decoration-none">
+                                <i class="fas fa-key me-1"></i>Forgot Password?
+                            </a>
+                        </div> *@
+
+                        <hr class="my-4" />
+
+                        <div class="text-center">
+                            <p class="mb-2">Don't have an account?</p>
+                            <a asp-controller="Home" asp-action="Register"
+                               class="btn btn-outline-success">
+                                <i class="fas fa-user-plus me-2"></i>Create New Account
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>Your credentials are securely encrypted
+                    </small>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="Password">Password</label>
-            <input type="password" id="Password" name="Password" class="form-control" placeholder="Enter your password" required />
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Login</button>
-        </div>
-    </form>
-    <div>
-        <p>Don't have an account? <a href="/Home/Register">Register here</a></p>
     </div>
 </div>
+
+<script>
+    // Password visibility toggle
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordField = document.getElementById('passwordField');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    });
+
+    // Bootstrap validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>

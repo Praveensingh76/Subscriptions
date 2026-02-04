@@ -1,0 +1,50 @@
+﻿@model SubscriptionManagementViewModel
+
+@{
+    ViewData["Title"] = "Subscription Management";
+}
+
+<div class="container">
+    <h2>Manage Subscription</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Current Subscription</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Plan Type:</strong> @Model.Subscription.PlanType</p>
+            <p><strong>Start Date:</strong> @Model.Subscription.StartDate.ToString("MMM dd, yyyy")</p>
+            <p><strong>End Date:</strong> @Model.Subscription.EndDate.ToString("MMM dd, yyyy")</p>
+            <p><strong>Status:</strong> @(Model.Subscription.IsActive ? "Active" : "Inactive")</p>
+
+            @if (Model.Subscription.IsActive)
+            {
+                <form method="post" asp-action="CancelSubscription">
+                    <button type="submit" class="btn btn-danger">Cancel Subscription</button>
+                </form>
+            }
+            else
+            {
+                <p>Your subscription has expired. Please renew to continue.</p>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Available Subscription Plans</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="RenewSubscription">
+                <label for="PlanType">Select a plan:</label>
+                <select id="PlanType" name="planType" class="form-control">
+                    @foreach (var plan in Model.AvailablePlans)
+                    {
+                        <option value="@plan">@plan</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-primary mt-3">Renew Subscription</button>
+            </form>
+        </div>
+    </div>
+</div>

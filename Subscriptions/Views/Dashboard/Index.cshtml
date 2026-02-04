@@ -1,42 +1,287 @@
 ﻿@model UserDashboardViewModel
 
 @{
-    ViewData["Title"] = "User Dashboard";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="container">
-    <h2>Dashboard</h2>
-
-    <!-- Subscription Info -->
-    <div class="card">
-        <div class="card-header">Subscription</div>
-        <div class="card-body">
-            <p>Plan Type: @Model.Subscription.PlanType</p>
-           @*  <p>Status: @Model.Subscription.Status</p> *@
-            <p>Start Date: @Model.Subscription.StartDate.ToString("MMM dd, yyyy")</p>
-            <p>End Date: @Model.Subscription.EndDate.ToString("MMM dd, yyyy")</p>
-            @if (Model.Subscription.IsActive)
-            {
-                <a href="/Subscription/Manage" class="btn btn-primary">Manage Subscription</a>
-            }
-            else
-            {
-                <p>Your subscription has expired. Please renew.</p>
-            }
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 fw-bold text-primary">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </h1>
+        <div class="text-muted small">
+            <i class="fas fa-calendar-day me-1"></i>@DateTime.Now.ToString("dddd, MMMM dd, yyyy")
         </div>
     </div>
 
-    <!-- Progress Info -->
-    <div class="card mt-4">
-        <div class="card-header">Questionnaire Progress</div>
-        <div class="card-body">
-            <p>Questions Completed: @Model.CompletedQuestionsCount / @Model.TotalQuestionsCount</p>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: @Model.ProgressPercentage%" aria-valuenow="@Model.ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
-                    @Model.ProgressPercentage%
+
+    <div class="row">
+        <!-- Left Column - Progress Info -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-clipboard-check text-success me-2"></i>Questionnaire Progress
+                        </h4>
+                        <span class="badge bg-success fs-6">@Model.ProgressPercentage% Complete</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Progress Stats -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded">
+                                <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-check-circle text-success fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0">@Model.CompletedQuestionsCount</h3>
+                                    <p class="text-muted mb-0 small">Questions Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded">
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                    <i class="fas fa-question-circle text-primary fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0">@Model.TotalQuestionsCount</h3>
+                                    <p class="text-muted mb-0 small">Total Questions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold">Overall Progress</span>
+                            <span class="text-primary fw-bold">@Model.ProgressPercentage%</span>
+                        </div>
+                        <div class="progress" style="height: 12px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                 role="progressbar"
+                                 style="width: @Model.ProgressPercentage%"
+                                 aria-valuenow="@Model.ProgressPercentage"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="text-end mt-2">
+                            <small class="text-muted">@Model.CompletedQuestionsCount of @Model.TotalQuestionsCount questions answered</small>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        @if (Model.ProgressPercentage < 100)
+                        {
+                            <a href="/Assessment/Index" class="btn btn-success btn-lg px-4">
+                                <i class="fas fa-play-circle me-2"></i>Continue Questionnaire
+                            </a>
+                            <a href="/Assessment/Review" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-redo me-2"></i>Review Answers
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/Assessment/Review" class="btn btn-success btn-lg px-4">
+                                <i class="fas fa-check-circle me-2"></i>View Results
+                            </a>
+                            <a href="/Assessment/Retake" class="btn btn-outline-primary btn-lg px-4">
+                                <i class="fas fa-sync-alt me-2"></i>Retake Assessment
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
-            <a href="/Assessment/Index" class="btn btn-success mt-3">Continue Questionnaire</a>
+        </div>
+
+        <!-- Right Column - Subscription Info -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-crown text-warning me-2"></i>Subscription
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Status Badge -->
+                    <div class="text-center mb-4">
+                        <span class="badge @(Model.Subscription.IsActive ? "bg-success" : "bg-danger") fs-6 px-4 py-2">
+                            @Model.Subscription.IsActive ? "Active" : "Expired"
+                        </span>
+                    </div>
+
+                    <!-- Plan Details -->
+                    <div class="text-center mb-4">
+                        <h3 class="text-primary mb-2">@Model.Subscription.PlanType</h3>
+                        <p class="text-muted mb-0">Your current subscription plan</p>
+                    </div>
+
+                    <!-- Subscription Details -->
+                    <div class="border-top pt-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-check text-primary me-2"></i>
+                                <span class="fw-bold">Start Date</span>
+                            </div>
+                            <span class="text-dark">@Model.Subscription.StartDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-times text-primary me-2"></i>
+                                <span class="fw-bold">End Date</span>
+                            </div>
+                            <span class="text-dark">@Model.Subscription.EndDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock text-primary me-2"></i>
+                                <span class="fw-bold">Status</span>
+                            </div>
+                            <span class="@(Model.Subscription.IsActive ? "text-success" : "text-danger") fw-bold">
+                                @(Model.Subscription.IsActive ? "Active" : "Expired")
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 mt-4">
+                        @if (Model.Subscription.IsActive)
+                        {
+                            <a href="/Subscription/Manage" class="btn btn-primary btn-lg">
+                                <i class="fas fa-cog me-2"></i>Manage Subscription
+                            </a>
+                            <a href="/Subscription/Upgrade" class="btn btn-outline-warning">
+                                <i class="fas fa-rocket me-2"></i>Upgrade Plan
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning border-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        <strong>Subscription Expired</strong>
+                                        <p class="mb-0 small">Renew to continue access</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="/Subscription/Renew" class="btn btn-success btn-lg">
+                                <i class="fas fa-sync-alt me-2"></i>Renew Now
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Row -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-bolt text-info me-2"></i>Quick Actions
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/Progress" class="card text-decoration-none border-0 shadow-sm h-100 text-center hover-lift">
+                                <div class="card-body py-4">
+                                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                                        <i class="fas fa-chart-line fa-2x text-info"></i>
+                                    </div>
+                                    <h5 class="card-title">Progress Report</h5>
+                                    <p class="card-text small text-muted">View detailed progress analytics</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/Recommendations" class="card text-decoration-none border-0 shadow-sm h-100 text-center hover-lift">
+                                <div class="card-body py-4">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                                        <i class="fas fa-lightbulb fa-2x text-warning"></i>
+                                    </div>
+                                    <h5 class="card-title">Recommendations</h5>
+                                    <p class="card-text small text-muted">Get personalized suggestions</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/Profile" class="card text-decoration-none border-0 shadow-sm h-100 text-center hover-lift">
+                                <div class="card-body py-4">
+                                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                                        <i class="fas fa-user-edit fa-2x text-success"></i>
+                                    </div>
+                                    <h5 class="card-title">Profile</h5>
+                                    <p class="card-text small text-muted">Update your account details</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/Support" class="card text-decoration-none border-0 shadow-sm h-100 text-center hover-lift">
+                                <div class="card-body py-4">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                                        <i class="fas fa-question-circle fa-2x text-primary"></i>
+                                    </div>
+                                    <h5 class="card-title">Help & Support</h5>
+                                    <p class="card-text small text-muted">Get assistance and FAQs</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Minimal inline CSS for hover effects */
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    .progress-bar-animated {
+        animation: progress-bar-stripes 1s linear infinite;
+    }
+
+    @@keyframes progress-bar-stripes {
+        from {
+            background-position: 1rem 0;
+        }
+
+        to {
+            background-position: 0 0;
+        }
+    }
+</style>
+
+<script>
+    // Simple hover effect for cards
+    document.querySelectorAll('.hover-lift').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 0.125rem 0.25rem rgba(0,0,0,0.075)';
+        });
+    });
+</script>

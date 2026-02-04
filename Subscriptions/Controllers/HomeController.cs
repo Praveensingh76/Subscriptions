@@ -33,8 +33,9 @@ namespace Subscriptions.Controllers
                 var user = await _repo.LoginUserAsync(model.Email, AppCode.encrypt(model.Password));
                 if (user != null)
                 {
-                    // Add authentication logic here (e.g., set a cookie or JWT token)
-                    return RedirectToAction("Index", "Admin");  // Redirect to home or dashboard
+                    HttpContext.Session.SetString("Id", AppCode.encrypt(user.Id.ToString()));
+                    HttpContext.Session.SetString("Role", AppCode.encrypt("User"));
+                    return RedirectToAction("Index", "Dashboard");
                 }
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }

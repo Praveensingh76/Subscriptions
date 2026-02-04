@@ -30,7 +30,7 @@ namespace Subscriptions.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _repo.LoginUserAsync(model.Email, model.Password);
+                var user = await _repo.LoginUserAsync(model.Email, AppCode.encrypt(model.Password));
                 if (user != null)
                 {
                     // Add authentication logic here (e.g., set a cookie or JWT token)
@@ -45,7 +45,8 @@ namespace Subscriptions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(User user)
         {
-            user.SubscriptionStatus = "Pending";
+            user.PasswordHash = AppCode.encrypt(user.PasswordHash);
+            user.SubscriptionStatus = "Active";
 
 
             var result = await _repo.CreateUser(user);

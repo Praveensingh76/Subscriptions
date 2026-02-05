@@ -72,5 +72,11 @@ namespace Subscriptions.Controllers
             return View(responses);
         }
 
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Admin");
+        }
+
     }
 }

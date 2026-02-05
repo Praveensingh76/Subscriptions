@@ -1,8 +1,597 @@
-﻿
+﻿@model List<User>
+
 @{
-    ViewData["Title"] = "UserManagement";
-    Layout = "~/Views/Shared/_adminLayout.cshtml";
+    ViewData["Title"] = "User Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>UserManagement</h1>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-dark">
+                <i class="fas fa-users text-primary me-2"></i>User Management
+            </h1>
+            <p class="text-muted mb-0">View all registered users and their subscription status</p>
+        </div>
+        <div>
+            <span class="badge bg-primary px-3 py-2">
+                <i class="fas fa-user-friends me-1"></i>Total Users: @Model.Count
+            </span>
+        </div>
+    </div>
 
+    <!-- Subscription Status Summary -->
+    <div class="row mb-4">
+        @{
+            var activeUsers = Model.Count(u => u.SubscriptionStatus == "Active");
+            var expiredUsers = Model.Count(u => u.SubscriptionStatus == "Expired");
+            var pendingUsers = Model.Count(u => u.SubscriptionStatus == "Pending");
+            var otherUsers = Model.Count - activeUsers - expiredUsers - pendingUsers;
+        }
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                    </div>
+                    <h3 class="mb-1">@activeUsers</h3>
+                    <p class="text-muted mb-0">Active Subscriptions</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-danger bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                    </div>
+                    <h3 class="mb-1">@expiredUsers</h3>
+                    <p class="text-muted mb-0">Expired Subscriptions</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-clock fa-2x text-warning"></i>
+                    </div>
+                    <h3 class="mb-1">@pendingUsers</h3>
+                    <p class="text-muted mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="bg-secondary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-users fa-2x text-secondary"></i>
+                    </div>
+                    <h3 class="mb-1">@otherUsers</h3>
+                    <p class="text-muted mb-0">Other Status</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2"></i>All Registered Users
+                </h5>
+                <div class="d-flex gap-2">
+                    <div class="input-group" style="width: 250px;">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Search users..." id="searchInput">
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter me-2"></i>Filter by Status
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="filterByStatus('all')">All Status</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByStatus('Active')">Active</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByStatus('Expired')">Expired</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByStatus('Pending')">Pending</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByStatus('other')">Other</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="usersTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50">#</th>
+                            <th width="100">User ID</th>
+                            <th>User Details</th>
+                            <th width="120">Subscription</th>
+                            <th width="150">Account Created</th>
+                            <th width="150">Last Updated</th>
+                            <th width="100">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            var user = Model[i];
+                            <tr data-user-id="@user.Id" data-username="@user.Username" data-email="@user.Email"
+                                data-status="@user.SubscriptionStatus" data-created="@user.CreatedAt.ToString("yyyy-MM-dd")"
+                                data-updated="@user.UpdatedAt.ToString("yyyy-MM-dd")">
+                                <td>
+                                    <span class="fw-bold">@(i + 1)</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@user.Id</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-start">
+                                        <div class="user-avatar me-3">
+                                            @user.Username.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@user.Username</div>
+                                            <div class="text-muted small">@user.Email</div>
+                                            <small class="text-muted">Member since @user.CreatedAt.ToString("MMM yyyy")</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @{
+                                        var statusBadgeClass = user.SubscriptionStatus switch
+                                        {
+                                            "Active" => "bg-success",
+                                            "Expired" => "bg-danger",
+                                            "Pending" => "bg-warning",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+                                    <span class="badge @statusBadgeClass">
+                                        @if (user.SubscriptionStatus == "Active")
+                                        {
+                                            <i class="fas fa-check-circle me-1"></i>
+                                        }
+                                        else if (user.SubscriptionStatus == "Expired")
+                                        {
+                                            <i class="fas fa-times-circle me-1"></i>
+                                        }
+                                        else if (user.SubscriptionStatus == "Pending")
+                                        {
+                                            <i class="fas fa-clock me-1"></i>
+                                        }
+                                        @user.SubscriptionStatus
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>@user.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                    <small class="text-muted">@user.CreatedAt.ToString("hh:mm tt")</small>
+                                </td>
+                                <td>
+                                    <div>@user.UpdatedAt.ToString("MMM dd, yyyy")</div>
+                                    <small class="text-muted">@user.UpdatedAt.ToString("hh:mm tt")</small>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            onclick="viewUser(@user.Id)">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Users Found</h4>
+                    <p class="text-muted">There are no registered users in the system yet.</p>
+                </div>
+            }
+        </div>
+        <div class="card-footer bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted">Showing <span id="showingCount">@Model.Count</span> of @Model.Count users</small>
+                </div>
+                <div>
+                    <small class="text-muted">Sorted by registration date (newest first)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View User Modal -->
+<div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewUserModalLabel">
+                    <i class="fas fa-eye me-2"></i>User Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body text-center">
+                                <div class="user-avatar-large mx-auto mb-3">
+                                    <span id="viewUserAvatar">U</span>
+                                </div>
+                                <h5 class="mb-1" id="viewUsername"></h5>
+                                <p class="text-muted mb-0" id="viewEmail"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fas fa-hashtag text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted">User ID</small>
+                                                <h5 class="mb-0" id="viewUserId"></h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fas fa-user-tag text-info"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted">Account Type</small>
+                                                <h5 class="mb-0">Standard User</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fas fa-calendar-plus text-warning"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted">Created Date</small>
+                                                <h6 class="mb-0" id="viewCreatedAt"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fas fa-calendar-check text-success"></i>
+                                            </div>
+                                            <div>
+                                                <small class="text-muted">Last Updated</small>
+                                                <h6 class="mb-0" id="viewUpdatedAt"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-crown me-2"></i>Subscription Information
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <span class="badge" id="viewStatusBadge"></span>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1" id="viewStatusText"></h5>
+                                        <p class="text-muted mb-0" id="viewStatusDescription"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-clipboard-list me-2"></i>User Activity
+                                </h6>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Assessments Completed</span>
+                                    <span class="fw-bold">N/A</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Recommendations Viewed</span>
+                                    <span class="fw-bold">N/A</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">Last Login</span>
+                                    <span class="fw-bold">Recently</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Account Information
+                                </h6>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-envelope text-primary me-2"></i>
+                                    <small class="text-muted">Email Verified: <span class="fw-bold">Yes</span></small>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-shield-alt text-success me-2"></i>
+                                    <small class="text-muted">Account Security: <span class="fw-bold">Active</span></small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-bell text-warning me-2"></i>
+                                    <small class="text-muted">Notifications: <span class="fw-bold">Enabled</span></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #4361ee;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .user-avatar-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: #4361ee;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 2rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .badge {
+        padding: 5px 10px;
+        font-weight: 500;
+    }
+
+    .card {
+        border: none;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: #495057;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 1rem 0.75rem;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .bg-success {
+        background-color: #198754 !important;
+    }
+
+    .bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    .bg-warning {
+        background-color: #ffc107 !important;
+        color: #000 !important;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
+            let visibleCount = 0;
+
+            document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+                const username = row.dataset.username.toLowerCase();
+                const email = row.dataset.email.toLowerCase();
+                const id = row.dataset.userId;
+                const status = row.dataset.status.toLowerCase();
+                const rowText = row.textContent.toLowerCase();
+
+                if (username.includes(searchText) || email.includes(searchText) ||
+                    id.includes(searchText) || status.includes(searchText) || rowText.includes(searchText)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('showingCount').textContent = visibleCount;
+        });
+
+        // Filter by status
+        function filterByStatus(status) {
+            let visibleCount = 0;
+
+            document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+                const userStatus = row.dataset.status;
+
+                if (status === 'all' ||
+                    (status === 'other' && !['Active', 'Expired', 'Pending'].includes(userStatus)) ||
+                    userStatus === status) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('showingCount').textContent = visibleCount;
+
+            // Update dropdown text
+            const dropdownButton = document.querySelector('.dropdown-toggle');
+            if (status === 'all') {
+                dropdownButton.innerHTML = '<i class="fas fa-filter me-2"></i>Filter by Status';
+            } else if (status === 'other') {
+                dropdownButton.innerHTML = '<i class="fas fa-filter me-2"></i>Other Status';
+            } else {
+                dropdownButton.innerHTML = `<i class="fas fa-filter me-2"></i>${status}`;
+            }
+        }
+
+        // View user details
+        function viewUser(id) {
+            const row = document.querySelector(`tr[data-user-id="${id}"]`);
+            if (!row) return;
+
+            const username = row.dataset.username;
+            const email = row.dataset.email;
+            const status = row.dataset.status;
+            const createdAt = row.dataset.created;
+            const updatedAt = row.dataset.updated;
+
+            // Set modal content
+            document.getElementById('viewUserAvatar').textContent = username.substring(0, 1).toUpperCase();
+            document.getElementById('viewUsername').textContent = username;
+            document.getElementById('viewEmail').textContent = email;
+            document.getElementById('viewUserId').textContent = id;
+
+            // Format dates for display
+            const createdDate = new Date(createdAt);
+            const updatedDate = new Date(updatedAt);
+
+            document.getElementById('viewCreatedAt').textContent =
+                createdDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+            document.getElementById('viewUpdatedAt').textContent =
+                updatedDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+            // Set status information
+            const statusBadge = document.getElementById('viewStatusBadge');
+            const statusText = document.getElementById('viewStatusText');
+            const statusDescription = document.getElementById('viewStatusDescription');
+
+            let badgeClass = '';
+            let description = '';
+
+            switch(status) {
+                case 'Active':
+                    badgeClass = 'bg-success';
+                    description = 'User has an active subscription and full access to all features.';
+                    break;
+                case 'Expired':
+                    badgeClass = 'bg-danger';
+                    description = 'User subscription has expired. Limited access to features.';
+                    break;
+                case 'Pending':
+                    badgeClass = 'bg-warning';
+                    description = 'User subscription is pending activation or payment.';
+                    break;
+                default:
+                    badgeClass = 'bg-secondary';
+                    description = 'User subscription status is not specified.';
+                    break;
+            }
+
+            statusBadge.className = `badge ${badgeClass}`;
+            statusBadge.innerHTML = status === 'Active' ?
+                '<i class="fas fa-check-circle me-1"></i>Active' :
+                status === 'Expired' ?
+                '<i class="fas fa-times-circle me-1"></i>Expired' :
+                status === 'Pending' ?
+                '<i class="fas fa-clock me-1"></i>Pending' :
+                `<i class="fas fa-question-circle me-1"></i>${status}`;
+
+            statusText.textContent = status;
+            statusDescription.textContent = description;
+
+            const modal = new bootstrap.Modal(document.getElementById('viewUserModal'));
+            modal.show();
+        }
+    </script>
+}

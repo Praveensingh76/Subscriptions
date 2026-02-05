@@ -1,4 +1,5 @@
-﻿@{
+﻿@model AdminDashboardViewModel
+@{
     ViewData["Title"] = "Dashboard";
     Layout = "_AdminLayout";
 }
@@ -33,7 +34,7 @@
                     </div>
                 </div>
                 <div class="text-end">
-                    <h3 id="totalUsers">0</h3>
+                    <h3>@Model.TotalUser</h3>
                 </div>
             </div>
             <h5 class="text-muted mb-2">Total Users</h5>
@@ -57,7 +58,7 @@
                     </div>
                 </div>
                 <div class="text-end">
-                    <h3 id="totalQuestions">0</h3>
+                    <h3>@Model.TotalQuestions</h3>
                 </div>
             </div>
             <h5 class="text-muted mb-2">Total Questions</h5>
@@ -81,7 +82,7 @@
                     </div>
                 </div>
                 <div class="text-end">
-                    <h3 id="totalGuidance">0</h3>
+                    <h3>@Model.TotalQuestions</h3>
                 </div>
             </div>
             <h5 class="text-muted mb-2">Guidance Items</h5>
@@ -105,7 +106,7 @@
                     </div>
                 </div>
                 <div class="text-end">
-                    <h3 id="totalResponses">0</h3>
+                    <h3>@Model.TotalResponses</h3>
                 </div>
             </div>
             <h5 class="text-muted mb-2">Total Responses</h5>
@@ -121,46 +122,3 @@
     </div>
 </div>
 
-
-<script>
-    // Load stats dynamically
-    async function loadDashboardStats() {
-        try {
-            // In a real application, you would fetch this data from your API
-            // For now, we'll use mock data
-
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Mock data
-            const mockData = {
-                totalUsers: 154,
-                totalQuestions: 42,
-                totalGuidance: 28,
-                totalResponses: 387
-            };
-
-            // Update the stats
-            document.getElementById('totalUsers').textContent = mockData.totalUsers;
-            document.getElementById('totalQuestions').textContent = mockData.totalQuestions;
-            document.getElementById('totalGuidance').textContent = mockData.totalGuidance;
-            document.getElementById('totalResponses').textContent = mockData.totalResponses;
-
-        } catch (error) {
-            console.error('Error loading dashboard stats:', error);
-            // Set default values on error
-            document.getElementById('totalUsers').textContent = 'N/A';
-            document.getElementById('totalQuestions').textContent = 'N/A';
-            document.getElementById('totalGuidance').textContent = 'N/A';
-            document.getElementById('totalResponses').textContent = 'N/A';
-        }
-    }
-
-    // Initialize dashboard on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadDashboardStats();
-
-        // Auto-refresh stats every 30 seconds
-        setInterval(loadDashboardStats, 30000);
-    });
-</script>

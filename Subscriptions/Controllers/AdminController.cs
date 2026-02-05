@@ -17,9 +17,10 @@ namespace Subscriptions.Controllers
         {
             _repository = repository;
         }
-        public IActionResult Index()
-        {
-            return View();
+        public async Task<IActionResult> Index()
+        -{
+            var adminView = await _repository.GetAdminAsync();
+            return View(adminView);
         }
 
         [AllowAnonymous]

@@ -19,6 +19,7 @@ namespace Subscriptions.Interface
         Task<IEnumerable<Guidance>> GetAllGuidanceAsync();
 
         Task<IEnumerable<UserResponse>> GetAllResponsesAsync();
+        Task<AdminDashboardViewModel> GetAdminAsync();
     }
 
 }

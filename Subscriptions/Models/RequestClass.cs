@@ -41,4 +41,12 @@
     }
 
 
+    public class AdminDashboardViewModel
+    {
+        public int TotalUser { get; set; }
+        public int TotalQuestions { get; set; }
+        public int TotalGuidance { get; set; }
+        public int TotalResponses { get; set; }
+    }
+
 }

@@ -205,5 +205,18 @@ namespace Subscriptions.Repo
                 }; return await connection.QueryAsync<UserResponse>("sp_Assessment", parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task<AdminDashboardViewModel> GetAdminAsync()
+        {
+            using (var connection = new SqlConnection(conn))
+            {
+                connection.Open();
+                var parameters = new
+                {
+                    QueryType = "GetAdminDashbord"
+                };
+                return await connection.QuerySingleOrDefaultAsync<AdminDashboardViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

@@ -170,5 +170,40 @@ namespace Subscriptions.Repo
         }
 
 
+        //admin
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            using (var connection = new SqlConnection(conn))
+            {
+                var parameters = new
+                {
+                    QueryType = "GetAllUsers"
+                }; return await connection.QueryAsync<User>("sp_User", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<Guidance>> GetAllGuidanceAsync()
+        {
+            using (var connection = new SqlConnection(conn))
+            {
+                var parameters = new
+                {
+                    QueryType = "GetAllGuidance"
+                }; return await connection.QueryAsync<Guidance>("sp_Assessment", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+
+        public async Task<IEnumerable<UserResponse>> GetAllResponsesAsync()
+        {
+            using (var connection = new SqlConnection(conn))
+            {
+                var parameters = new
+                {
+                    QueryType = "GetALLUserResponses"
+                }; return await connection.QueryAsync<UserResponse>("sp_Assessment", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

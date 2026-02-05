@@ -6,17 +6,37 @@
 
 <div class="container">
     <h2>Assessment Form</h2>
+
     <form method="post" asp-action="SaveAnswers">
-        @foreach (var question in Model.Questions)
+        @Html.AntiForgeryToken()
+
+        @for (int i = 0; i < Model.Questions.Count; i++)
         {
+            <input type="hidden" asp-for="Questions[i].Id" />
+
             <div class="card mb-3">
-                <div class="card-header">@question.QuestionText</div>
+                <div class="card-header">
+                    @Model.Questions[i].QuestionText
+                </div>
+
                 <div class="card-body">
-                    <input type="radio" name="question_@question.Id" value="Option1"> Option 1
-                    <input type="radio" name="question_@question.Id" value="Option2"> Option 2
+                    <label>
+                        <input type="radio"
+                               name="Answers[@Model.Questions[i].Id]"
+                               value="Option1" /> Option 1
+                    </label>
+
+                    <label class="ms-3">
+                        <input type="radio"
+                               name="Answers[@Model.Questions[i].Id]"
+                               value="Option2" /> Option 2
+                    </label>
                 </div>
             </div>
         }
-        <button type="submit" class="btn btn-primary">Save Progress</button>
+
+        <button type="submit" class="btn btn-primary">
+            Save Progress
+        </button>
     </form>
 </div>

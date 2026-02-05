@@ -25,6 +25,7 @@
     public class QuestionnaireViewModel
     {
         public List<Question> Questions { get; set; }
+        public Dictionary<int, string> Answers { get; set; }
     }
 
 

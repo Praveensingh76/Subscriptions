@@ -29,36 +29,70 @@ namespace Subscriptions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var user = await _repo.LoginUserAsync(model.Email, AppCode.encrypt(model.Password));
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var user = await _repo.LoginUserAsync(
+                    model.Email,
+                    AppCode.encrypt(model.Password)
+                );
+
                 if (user != null)
                 {
                     HttpContext.Session.SetString("Id", AppCode.encrypt(user.Id.ToString()));
                     HttpContext.Session.SetString("Role", AppCode.encrypt("User"));
+
+                    TempData["SuccessMessage"] = "Login successful. Welcome back!";
                     return RedirectToAction("Index", "Dashboard");
                 }
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+
+                TempData["ErrorMessage"] = "Invalid email or password.";
+                return View(model);
             }
-            return View(model);
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Something went wrong. Please try again later.";
+
+
+                return View(model);
+            }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(User user)
         {
-            user.PasswordHash = AppCode.encrypt(user.PasswordHash);
-            user.SubscriptionStatus = "Active";
-
-
-            var result = await _repo.CreateUser(user);
-            if (result != 0)
+            try
             {
-                return RedirectToAction("Index");
-            }
-            ModelState.AddModelError(string.Empty, "Email is already registered");
 
-            return View();
+
+                user.PasswordHash = AppCode.encrypt(user.PasswordHash);
+                user.SubscriptionStatus = "Active";
+
+                var result = await _repo.CreateUser(user);
+
+                if (result > 0)
+                {
+
+                    TempData["SuccessMessage"] = "Registration successful. Please login.";
+                    return RedirectToAction("Index");
+                }
+
+                TempData["ErrorMessage"] = "Email is already registered.";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Something went wrong. Please try again later.";
+
+
+                return View();
+            }
         }
 
         public IActionResult Privacy()

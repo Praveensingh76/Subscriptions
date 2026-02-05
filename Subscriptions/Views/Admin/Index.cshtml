@@ -1,5 +1,166 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
 }
+
+<!-- Welcome Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-2">Welcome back, Administrator! 👋</h3>
+                    <p class="text-muted mb-0">Here's what's happening with your platform today.</p>
+                </div>
+                <div class="d-none d-md-block">
+                    <span class="badge bg-primary px-3 py-2">
+                        <i class="fas fa-clock me-1"></i>@DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="stats-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 id="totalUsers">0</h3>
+                </div>
+            </div>
+            <h5 class="text-muted mb-2">Total Users</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-success small">
+                    <i class="fas fa-arrow-up me-1"></i>12% from last month
+                </span>
+                <a href="/Admin/UserManagement" class="text-decoration-none">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="stats-icon bg-success bg-opacity-10 text-success">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 id="totalQuestions">0</h3>
+                </div>
+            </div>
+            <h5 class="text-muted mb-2">Total Questions</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-success small">
+                    <i class="fas fa-arrow-up me-1"></i>8% from last month
+                </span>
+                <a href="/Admin/QuestionManagement" class="text-decoration-none">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="stats-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 id="totalGuidance">0</h3>
+                </div>
+            </div>
+            <h5 class="text-muted mb-2">Guidance Items</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-success small">
+                    <i class="fas fa-arrow-up me-1"></i>15% from last month
+                </span>
+                <a href="/Admin/GuidanceManagement" class="text-decoration-none">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="stats-icon bg-info bg-opacity-10 text-info">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 id="totalResponses">0</h3>
+                </div>
+            </div>
+            <h5 class="text-muted mb-2">Total Responses</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-success small">
+                    <i class="fas fa-arrow-up me-1"></i>25% from last month
+                </span>
+                <a href="/Admin/ViewResponses" class="text-decoration-none">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Load stats dynamically
+    async function loadDashboardStats() {
+        try {
+            // In a real application, you would fetch this data from your API
+            // For now, we'll use mock data
+
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Mock data
+            const mockData = {
+                totalUsers: 154,
+                totalQuestions: 42,
+                totalGuidance: 28,
+                totalResponses: 387
+            };
+
+            // Update the stats
+            document.getElementById('totalUsers').textContent = mockData.totalUsers;
+            document.getElementById('totalQuestions').textContent = mockData.totalQuestions;
+            document.getElementById('totalGuidance').textContent = mockData.totalGuidance;
+            document.getElementById('totalResponses').textContent = mockData.totalResponses;
+
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+            // Set default values on error
+            document.getElementById('totalUsers').textContent = 'N/A';
+            document.getElementById('totalQuestions').textContent = 'N/A';
+            document.getElementById('totalGuidance').textContent = 'N/A';
+            document.getElementById('totalResponses').textContent = 'N/A';
+        }
+    }
+
+    // Initialize dashboard on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDashboardStats();
+
+        // Auto-refresh stats every 30 seconds
+        setInterval(loadDashboardStats, 30000);
+    });
+</script>

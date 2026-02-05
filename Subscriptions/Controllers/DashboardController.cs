@@ -20,12 +20,13 @@ namespace Subscriptions.Controllers
             var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
             var subscription = await _repository.CheckSubscriptionAsync(userId);
             var responses = await _repository.GetUserResponsesAsync(userId);
+            var question = await _repository.GetAllQuestionsAsync();
 
             var model = new UserDashboardViewModel
             {
                 Subscription = subscription,
                 CompletedQuestionsCount = responses.Count(),
-                TotalQuestionsCount = 20, // Adjust based on actual question count
+                TotalQuestionsCount = question.Count(),
                 Guidance = "Sample recommendation based on your answers" // Get this from the DB if needed
             };
 

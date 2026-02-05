@@ -35,7 +35,7 @@
                     }
 
 
-                    <form method="post" asp-action="Index" class="needs-validation" novalidate>
+                    <form method="post" asp-action="Login" class="needs-validation" novalidate>
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3 alert alert-danger"></div>
 
                         <div class="form-floating mb-3">
@@ -81,13 +81,7 @@
 
                         <hr class="my-4" />
 
-                        <div class="text-center">
-                            <p class="mb-2">Don't have an account?</p>
-                            <a asp-controller="Home" asp-action="Register"
-                               class="btn btn-outline-success">
-                                <i class="fas fa-user-plus me-2"></i>Create New Account
-                            </a>
-                        </div>
+
                     </form>
                 </div>
 

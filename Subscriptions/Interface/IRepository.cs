@@ -15,7 +15,10 @@ namespace Subscriptions.Interface
         Task<IEnumerable<Question>> GetQuestionsByCategoryAsync(string category);
         Task<IEnumerable<Guidance>> GetGuidanceRecommendationsAsync(int userId);
         Task<int> DeactivateExpiredSubscriptionsAsync();
+        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<IEnumerable<Guidance>> GetAllGuidanceAsync();
 
+        Task<IEnumerable<UserResponse>> GetAllResponsesAsync();
     }
 
 }

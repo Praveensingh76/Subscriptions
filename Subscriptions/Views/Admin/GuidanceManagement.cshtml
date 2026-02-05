@@ -1,0 +1,279 @@
+﻿@model List<Guidance>
+
+@{
+    ViewData["Title"] = "Guidance Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-dark">
+                <i class="fas fa-lightbulb text-warning me-2"></i>Guidance Management
+            </h1>
+            <p class="text-muted mb-0">Create and manage guidance recommendations for users</p>
+        </div>
+
+    </div>
+
+    <!-- Categories Summary -->
+    <div class="row mb-4">
+        @foreach (var category in Model.Select(g => g.Category).Distinct())
+        {
+            var categoryCount = Model.Count(g => g.Category == category);
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-tag fa-2x text-warning"></i>
+                        </div>
+                        <h3 class="mb-1">@categoryCount</h3>
+                        <p class="text-muted mb-0">@category</p>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Total Guidance Card -->
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100 bg-primary bg-opacity-10">
+                <div class="card-body text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-lightbulb fa-2x text-primary"></i>
+                    </div>
+                    <h3 class="mb-1">@Model.Count</h3>
+                    <p class="text-muted mb-0">Total Guidance</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guidance List -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>All Guidance Items
+                </h5>
+
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="guidanceTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50">ID</th>
+                            <th>Category</th>
+                            <th>Guidance Text</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var guidance in Model.OrderByDescending(g => g.CreatedAt))
+                        {
+                            <tr data-guidance-id="@guidance.Id" data-category="@guidance.Category"
+                                data-text="@guidance.GuidanceText" data-date="@guidance.CreatedAt.ToString("yyyy-MM-dd")">
+                                <td><span class="badge bg-secondary">@guidance.Id</span></td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-tag me-1"></i>@guidance.Category
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="guidance-text-preview">
+                                        @if (guidance.GuidanceText.Length > 100)
+                                        {
+                                            @guidance.GuidanceText.Substring(0, 100)
+
+                                            <text>...</text>
+                                        }
+                                        else
+                                        {
+                                            @guidance.GuidanceText
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>@guidance.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                    <small class="text-muted">@guidance.CreatedAt.ToString("hh:mm tt")</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary" onclick="viewGuidance(@guidance.Id)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Guidance Items Found</h4>
+                    <p class="text-muted">Click "Add New Guidance" to create your first guidance item.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<!-- View Guidance Modal -->
+<div class="modal fade" id="viewGuidanceModal" tabindex="-1" aria-labelledby="viewGuidanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewGuidanceModalLabel">
+                    <i class="fas fa-eye me-2"></i>View Guidance Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <label class="form-label fw-bold">Guidance ID</label>
+                        <p id="viewId" class="form-control-plaintext"></p>
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label fw-bold">Category</label>
+                        <p id="viewCategory" class="form-control-plaintext"></p>
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label fw-bold">Created Date</label>
+                        <p id="viewCreatedAt" class="form-control-plaintext"></p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Guidance Text</label>
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <p id="viewGuidanceText" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(255, 193, 7, 0.05);
+    }
+
+    .badge {
+        padding: 5px 10px;
+        font-weight: 500;
+    }
+
+    .guidance-text-preview {
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card {
+        border: none;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #ffc107;
+        color: #000;
+    }
+</style>
+
+<script>
+    // Character count for add form
+    document.getElementById('addGuidanceText').addEventListener('input', function() {
+        document.getElementById('charCount').textContent = this.value.length;
+    });
+
+    // Character count for edit form
+    document.getElementById('editGuidanceText')?.addEventListener('input', function() {
+        document.getElementById('editCharCount').textContent = this.value.length;
+    });
+
+    // Handle category selection in add form
+    document.getElementById('addCategory').addEventListener('change', function() {
+        if (this.value === 'Other') {
+            document.getElementById('addNewCategory').required = true;
+            document.getElementById('addNewCategory').focus();
+        } else {
+            document.getElementById('addNewCategory').required = false;
+        }
+    });
+
+    // Handle category selection in edit form
+    document.getElementById('editCategory')?.addEventListener('change', function() {
+        if (this.value === 'Other') {
+            document.getElementById('editNewCategory').required = true;
+            document.getElementById('editNewCategory').focus();
+        } else {
+            document.getElementById('editNewCategory').required = false;
+        }
+    });
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+
+        document.querySelectorAll('#guidanceTable tbody tr').forEach(row => {
+            const category = row.dataset.category.toLowerCase();
+            const text = row.dataset.text.toLowerCase();
+            const rowText = row.textContent.toLowerCase();
+
+            if (category.includes(searchText) || text.includes(searchText) || rowText.includes(searchText)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Clear filters
+    function clearFilters() {
+        document.getElementById('searchInput').value = '';
+        document.querySelectorAll('#guidanceTable tbody tr').forEach(row => {
+            row.style.display = '';
+        });
+    }
+
+    // View guidance
+    function viewGuidance(id) {
+        const row = document.querySelector(`tr[data-guidance-id="${id}"]`);
+        if (!row) return;
+
+        document.getElementById('viewId').textContent = id;
+        document.getElementById('viewCategory').textContent = row.dataset.category;
+        document.getElementById('viewGuidanceText').textContent = row.dataset.text;
+        document.getElementById('viewCreatedAt').textContent = row.dataset.date;
+
+        const modal = new bootstrap.Modal(document.getElementById('viewGuidanceModal'));
+        modal.show();
+    }
+
+
+
+
+
+
+</script>

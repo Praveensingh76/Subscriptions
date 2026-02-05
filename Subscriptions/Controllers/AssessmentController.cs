@@ -30,27 +30,28 @@ namespace Subscriptions.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveAnswers(QuestionnaireViewModel model)
         {
-            if (ModelState.IsValid)
+            if (model == null || model.Answers == null || !model.Answers.Any())
             {
-                var userIdEncrypted = HttpContext.Session.GetString("Id");
-                var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
-                // Assuming the responses are from the form as `model.Answers`
-                foreach (var question in model.Questions)
-                {
-                    var response = new UserResponse
-                    {
-
-                        UserId = userId,
-                        QuestionId = question.Id,
-                        Response = "Sample answer" // Replace with the actual response from the form
-                    };
-                    await _repository.SaveUserResponseAsync(response);
-                }
-
-                return RedirectToAction("Recommendations", "Assessment");
+                ModelState.AddModelError("", "Please answer at least one question.");
+                return View("Index", model);
             }
 
-            return View("Index", model);
+            var userIdEncrypted = HttpContext.Session.GetString("Id");
+            var userId = int.Parse(AppCode.Decrypt(userIdEncrypted));
+
+            foreach (var answer in model.Answers)
+            {
+                var response = new UserResponse
+                {
+                    UserId = userId,
+                    QuestionId = answer.Key,
+                    Response = answer.Value
+                };
+
+                await _repository.SaveUserResponseAsync(response);
+            }
+
+            return RedirectToAction("Recommendations", "Assessment");
         }
 
 
